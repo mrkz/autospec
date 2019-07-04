@@ -188,6 +188,7 @@ simple_pats = [
 # failed_pattern patterns
 # contains patterns for parsing build.log for missing dependencies
 failed_pats = [
+    (r"> Could not find [a-zA-Z0-9\.]+:(.*):[0-9\.]+", 0, 'gradle'),
     (r"[Dd]ependency (.*) found: NO \(tried pkgconfig and cmake\)", 0, 'pkgconfig'),
     (r"[Dd]ependency (.*) found: NO \(tried pkgconfig\)", 0, 'pkgconfig'),
     (r"[Dd]ependency (.*) found: NO", 0, None),

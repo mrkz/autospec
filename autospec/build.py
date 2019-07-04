@@ -143,11 +143,13 @@ def failed_pattern(line, pattern, verbose, buildtool=None):
                 must_restart += buildreq.add_buildreq(config.gems[s], cache=True)
             else:
                 print("Unknown ruby gem match", s)
-        elif buildtool == 'maven':
+        elif buildtool == 'maven' or buildtool == 'gradle':
             if s in config.maven_jars:
                 must_restart += buildreq.add_buildreq(config.maven_jars[s], cache=True)
             else:
                 must_restart += buildreq.add_buildreq('mvn-%s' % s, cache=True)
+            # make it easier to root-cause version issues by showing missing dep
+            print("          to meet:",line.replace("> Could not find ",""), end='')
         elif buildtool == 'catkin':
             must_restart += buildreq.add_pkgconfig_buildreq(s, cache=True)
             must_restart += buildreq.add_buildreq(s, cache=True)

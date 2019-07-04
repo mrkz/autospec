@@ -783,6 +783,12 @@ def scan_for_configure(dirn):
             add_buildreq("buildreq-php")
             buildpattern.set_build_pattern("phpize", 1)
 
+        if "build.gradle" in files:
+            add_buildreq("openjdk-dev")
+            add_buildreq("openjdk")
+            add_buildreq("gradle")
+            buildpattern.set_build_pattern("gradle", default_score)
+
         for name in files:
             if name.lower() == "cargo.toml" and dirpath == dirn:
                 parse_cargo_toml(os.path.join(dirpath, name))

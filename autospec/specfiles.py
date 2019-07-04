@@ -1598,6 +1598,32 @@ class Specfile(object):
         self._write_strip("%make_install")
         self._write_strip("\n")
 
+    def write_gradle_pattern(self):
+        # time.time() returns a float, but we only need second-precision
+        src_dt_epoch=int(time.time())
+        self.write_prep()
+        self._write_strip("%build")
+        self.write_build_prepend()
+        self.write_proxy_exports()
+        self._write_strip("export LANG=C.UTF-8")
+        self._write_strip("export SOURCE_DATE_EPOCH={}".format(src_dt_epoch))
+        self._write_strip("# Set up local repository")
+        self._write_strip("mkdir -p %{buildroot}")
+        self._write_strip("cp -r /usr/share/gradle/.m2 %{buildroot}/.m2")
+        self._write_strip("ln -s %{buildroot}/.m2 /builddir/.m2")
+        self._write_strip("gradle --offline -Pgradle_installPath=/tmp/gradle -PfinalRelease=true install")
+        self._write_strip("\n")
+        self._write_strip("%install")
+        self._write_strip("export SOURCE_DATE_EPOCH={}".format(src_dt_epoch))
+        self.write_install_prepend()
+        if len(self.license_files) > 0:
+            self._write_strip("mkdir -p %{buildroot}/usr/share/package-licenses/" + self.name)
+            for file in self.license_files:
+                file2 = file.replace("/", "_")
+                self._write_strip("cp " + file + " %{buildroot}/usr/share/package-licenses/" + self.name + "/" + file2 + "\n")
+        self._write("cp -R /tmp/gradle %{buildroot}/usr/share/")
+        self._write_strip("\n")
+
     def write_find_lang(self):
         """Write %find_lang macro to spec file."""
         for lang in self.locales:
